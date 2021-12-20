@@ -1,6 +1,6 @@
 databases:
   - name: dpg-c708pr1g7hp1bds8qeu0
-    databaseName: mysite
+    databaseName: dpg-c708pr1g7hp1bds8qeu0
     user: timetracker_user
 
 services:
