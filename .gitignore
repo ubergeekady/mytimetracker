@@ -17,4 +17,4 @@ build/
 tests/report/
 my-local-sqlite.db
 .DS_STORE
-.env.local
+.env
