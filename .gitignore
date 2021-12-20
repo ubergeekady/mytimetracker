@@ -17,5 +17,4 @@ tests/.coverage
 build/
 tests/report/
 my-local-sqlite
-.env
 .DS_STORE
