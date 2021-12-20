@@ -24,7 +24,7 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 def loginview(request):
     if request.user.is_authenticated:
-        return redirect(reverse('home'))
+        return redirect(reverse('dashboardview'))
     code = request.GET.get('code', False)
     if code:
         flow = google_auth_oauthlib.flow.Flow.from_client_config(
@@ -39,25 +39,25 @@ def loginview(request):
         try:
             user = User.objects.get(email=user_info['email'])
             login(request,user)
-            return redirect(reverse('home'))        
+            return redirect(reverse('dashboardview'))        
         except:
             user = User.objects.create_user(username=user_info['email'], first_name = user_info['name'], email = user_info['email'], password=None)
             user.save()
             login(request,user)
-            return redirect(reverse('home'))
+            return redirect(reverse('dashboardview'))
     else:
         error = request.GET.get('error', False)
         authUrl = get_authorization_url()
         return render(request, 'login.html', {'authUrl':authUrl, 'error':error})
 
 @login_required
-def home(request):
-    return render(request, 'index.html')
+def dashboardview(request):
+    return render(request, 'dashboard.html')
 
 @login_required
 def logoutview(request):
     logout(request)
-    return redirect(reverse('login'))
+    return redirect(reverse('loginview'))
 
 def get_authorization_url():
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
