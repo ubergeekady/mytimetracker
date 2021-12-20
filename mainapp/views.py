@@ -19,7 +19,7 @@ CLIENT_CONFIG = {'web': {
     'redirect_uris': settings.REDIRECT_URIS,
     'javascript_origins': settings.JAVASCRIPT_ORIGINS}}
 SCOPES = ['https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/userinfo.profile','openid']
-
+reduri = settings.REDIRECT_URIS
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 def loginview(request):
@@ -30,7 +30,7 @@ def loginview(request):
         flow = google_auth_oauthlib.flow.Flow.from_client_config(
             client_config=CLIENT_CONFIG,
             scopes=SCOPES)
-        flow.redirect_uri = settings.REDIRECT_URIS
+        flow.redirect_uri = reduri
         authorization_response = request.build_absolute_uri()
         flow.fetch_token(authorization_response=authorization_response)
         credentials = flow.credentials
@@ -63,7 +63,7 @@ def get_authorization_url():
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
         client_config=CLIENT_CONFIG,
         scopes=SCOPES)
-    flow.redirect_uri = settings.REDIRECT_URIS
+    flow.redirect_uri = reduri
     authorization_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true')    
