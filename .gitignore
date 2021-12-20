@@ -16,5 +16,5 @@ tests/coverage_html/
 tests/.coverage
 build/
 tests/report/
-my-local-sqlite
+my-local-sqlite.db
 .DS_STORE
