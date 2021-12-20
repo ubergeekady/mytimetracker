@@ -51,13 +51,17 @@ def loginview(request):
         return render(request, 'login.html', {'authUrl':authUrl, 'error':error})
 
 @login_required
+def logoutview(request):
+    logout(request)
+    return redirect(reverse('loginview'))
+
+@login_required
 def dashboardview(request):
     return render(request, 'dashboard.html')
 
 @login_required
-def logoutview(request):
-    logout(request)
-    return redirect(reverse('loginview'))
+def clientview(request):
+    return render(request, 'clients.html')
 
 def get_authorization_url():
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
