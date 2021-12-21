@@ -13,3 +13,7 @@ class ClientsAdmin(admin.ModelAdmin):
 @admin.register(models.Task)
 class ClientsAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
+
+@admin.register(models.TimeEntry)
+class ClientsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'start_time', 'end_time', 'duration')

@@ -73,11 +73,23 @@
         {% endfor %}
         <input type="text" class="form-control is-invalid" name="name" maxlength="40" id="id_name" {% if form.name.value != None %}value="{{ form.name.value|stringformat:'s' }}"{% endif %}> 
       {% else %}
-        {{form.name.label_tag}}
+        <label for="id_name">{{form.name.label_tag}}</label>
         <input type="text" class="form-control" name="name" maxlength="40" id="id_name" {% if form.name.value != None %}value="{{ form.name.value|stringformat:'s' }}"{% endif %}">
       {% endif %}
     </div>
 
+    <div class="form-group">
+        {% if form.estimated_time.errors %}
+          {% for err in form.estimated_time.errors %}
+            <label class="col-form-label" for="id_estimated_time"><i class="far fa-times-circle"></i>{{form.estimated_time.label_tag}} {{ err }}</label>
+          {% endfor %}
+          <input type="text" class="form-control is-invalid" name="estimated_time" maxlength="40" id="id_estimated_time" {% if form.estimated_time.value != None %}value="{{ form.estimated_time.value|stringformat:'s' }}"{% endif %}> 
+        {% else %}
+          <label for="id_estimated_time">{{form.estimated_time.label_tag}}</label>
+          <input type="text" class="form-control" name="estimated_time" maxlength="40" id="id_estimated_time" {% if form.estimated_time.value != None %}value="{{ form.estimated_time.value|stringformat:'s' }}"{% endif %}">
+        {% endif %}
+      </div>
+  
   </div>  
   <div class="card-footer">
     <button type="submit" class="btn btn-primary">Submit</button>
