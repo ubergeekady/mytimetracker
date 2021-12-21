@@ -1,0 +1,112 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container">
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container">
+        <div class="row">
+
+
+
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">{{page_header}}</h3>
+              </div>
+              <div class="card-body p-0">
+
+
+<form method="post">
+  {% csrf_token %}
+  <div class="card-body">
+
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+      <h5><i class="icon fas fa-ban"></i> Error!</h5>
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    {% if form.source.errors %}
+    <div class="alert alert-danger alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+      <h5><i class="icon fas fa-ban"></i> Error!</h5>
+      {{ form.source.errors }}
+    </div>
+    {% endif %}
+
+    {% if form.source %}
+    <div class="alert alert-danger alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+      <h5><i class="icon fas fa-ban"></i> Error!</h5>
+      {{ form.source }}
+    </div>
+    {% endif %}
+
+    {% for hidden_field in form.hidden_fields %}
+    {% if hidden_field.errors %}
+      <ul>
+        {% for error in hidden_field.errors %}
+          <li>(Hidden field {{ hidden_field.name }}) {{ error }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {{ hidden_field }}
+    {% endfor %}
+
+    <div class="form-group">
+      {% if form.name.errors %}
+        {% for err in form.name.errors %}
+          <label class="col-form-label" for="id_name"><i class="far fa-times-circle"></i>{{form.name.label_tag}} {{ err }}</label>
+        {% endfor %}
+        <input type="text" class="form-control is-invalid" name="name" maxlength="40" id="id_name" {% if form.name.value != None %}value="{{ form.name.value|stringformat:'s' }}"{% endif %}> 
+      {% else %}
+        <label for="id_name">{{form.name.label_tag}}</label>
+        <input type="text" class="form-control" name="name" maxlength="40" id="id_name" {% if form.name.value != None %}value="{{ form.name.value|stringformat:'s' }}"{% endif %}">
+      {% endif %}
+    </div>
+
+  </div>  
+  <div class="card-footer">
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+</form>
+
+
+
+
+
+                
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+
+  {% endblock %}

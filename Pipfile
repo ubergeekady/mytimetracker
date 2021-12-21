@@ -5,6 +5,12 @@ name = "pypi"
 
 [packages]
 django = "*"
+environ = "*"
+django-environ = "*"
+dj-database-url = "*"
+google-api-python-client = "*"
+google-auth-oauthlib = "*"
+whitenoise = "*"
 
 [dev-packages]
 

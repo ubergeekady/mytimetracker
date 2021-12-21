@@ -1,13 +1,15 @@
 from django.shortcuts import render
 from googleapiclient.discovery import build
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 import google_auth_oauthlib.flow
+from django.http import HttpResponseForbidden
 from django.conf import settings
-import json
+from . import forms
+from . import models
 import os
 
 CLIENT_CONFIG = {'web': {
@@ -60,8 +62,38 @@ def dashboardview(request):
     return render(request, 'dashboard.html')
 
 @login_required
-def clientview(request):
-    return render(request, 'clients.html')
+def clientlist(request):
+    client_list = models.Client.objects.filter(owner=request.user)
+    return render(request, 'clientlist.html', {'client_list':client_list})
+
+@login_required
+def clientnew(request):
+    page_header = "New Client"
+    if request.method == 'POST':
+        form = forms.ClientForm(request.POST)
+        if form.is_valid():
+            form.instance.owner = request.user
+            form.save()
+            return redirect(reverse('clientlist'))
+    else:
+        form = forms.ClientForm()
+    return render(request, 'clientpage.html', {'page_header':page_header,'form':form})
+
+@login_required
+def clientedit(request, client_id):
+    clientobj = get_object_or_404(models.Client, pk=client_id)
+    page_header = "Edit Client: "+clientobj.name
+    if clientobj.owner != request.user:
+        return HttpResponseForbidden()
+    if request.method == 'POST':
+        form = forms.ClientForm(request.POST , instance=clientobj)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('clientlist'))
+    else:
+        form = forms.ClientForm(instance=clientobj)
+    return render(request, 'clientpage.html', {'page_header':page_header,'form':form})
+
 
 def get_authorization_url():
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
