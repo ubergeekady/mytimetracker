@@ -8,9 +8,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseForbidden
 from django.conf import settings
+from string import Template
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from . import forms
 from . import models
-from datetime import datetime
+from datetime import datetime,date, timedelta
 import os
 import google_auth_oauthlib.flow
 
@@ -238,10 +241,6 @@ def newtimeentry(request):
     seconds = difference.seconds
     min, sec = divmod(seconds, 60)
     hour, min = divmod(min, 60)
-    print(taskId)
-    print(startTime)
-    print(endTime)
-    print(min,sec)
     taskobj = get_object_or_404(models.Task, pk=taskId)
     mod = models.TimeEntry.objects.create(start_time=startTime, end_time=endTime, 
                                 durationminutes=min, durationseconds=sec,
@@ -258,6 +257,68 @@ def timeentrydelete(request, timeentry_id):
     timeentryobj.delete()
     return redirect(reverse('taskdetail', kwargs={'task_id':taskid}))
 
+def report(request):
+    row_template = """
+            <tr>
+                <td>$client</td>
+                <td>$project</td>
+                <td>$task</td>
+                <td>$starttime</td>
+                <td>$endtime</td>
+                <td>$minutes</td>
+                <td>$seconds</td>
+                <td>$duration</td>
+            </tr>
+        """
+    t = Template(row_template)
+    yesterday = date.today() - timedelta(days=1)
+    user_list = models.User.objects.filter(is_staff=False)
+    total_sec = 0 
+    dict_list = []
+    for user in user_list:
+        time_entries = models.TimeEntry.objects.filter(start_time__date = yesterday, owner=user)
+        for entry in time_entries:
+            my_dict = {}
+            my_dict['client'] = entry.taskobj.projectobj.clientobj.name
+            my_dict['project'] = entry.taskobj.projectobj.name           
+            my_dict['task'] = entry.taskobj.name
+            my_dict['startTime'] = entry.start_time
+            my_dict['endTime'] = entry.end_time
+            my_dict['minutes'] = entry.durationminutes
+            my_dict['seconds'] = entry.durationseconds
+            my_dict['duration_string'] = str(entry.durationminutes) + " M: "+ str(entry.durationseconds) +" S"
+            total_sec += ((entry.durationminutes*60)+entry.durationseconds)
+            dict_list.append(my_dict)
+        secs = total_sec % 60
+        mins = int((total_sec - secs)/60)
+        hours = int((mins - (mins%60))/60)
+        productivity = (total_sec/(16*60*60))*100
+        table_header =  t.substitute(client='Client', project="Project", task="Task", 
+                                starttime="Start Time", endtime="End Time",
+                            minutes="Minutes", seconds="Seconds", duration="duration_string")
+        table_str = "<table>"+table_header
+        for item in dict_list:
+            row_str = t.substitute(client=item['client'], project=item['project'], task=item['task'], 
+                                starttime=item['startTime'], endtime=item['endTime'],
+                            minutes=item['minutes'], seconds=item['seconds'], duration=item['duration_string'])
+            table_str += row_str
+        table_str += "</table>"
+        subject = "You worked {}H, {}M, {}S yesterday. Your productivity was {:.2f}%".format(hours, mins, secs, productivity)
+        msgtxt = Mail(
+            from_email='adysingh1989coursera@gmail.com',
+            to_emails=user.email,
+            subject=subject,
+            html_content=table_str)
+        try:
+            sg = SendGridAPIClient('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')
+            response = sg.send(msgtxt)
+            print(response.status_code)
+            print(response.body)
+            print(response.headers)
+        except Exception as e:
+            print(e)   
+    return HttpResponse("None")     
+    
 
 def get_authorization_url():
     flow = google_auth_oauthlib.flow.Flow.from_client_config(

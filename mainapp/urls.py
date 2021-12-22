@@ -21,4 +21,6 @@ urlpatterns = [
     path('timeentry/<int:task_id>/', views.timeentry, name='timeentry'),
     path('timeentry/new/', views.newtimeentry, name='newtimeentry'),
     path('timeentry/<int:timeentry_id>/delete', views.timeentrydelete, name='timeentrydelete'),
+
+    path('report', views.report, name='report'),
 ]
