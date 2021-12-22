@@ -252,9 +252,7 @@ def taskdetail(request, task_id):
         my_dict['duration_string'] = str(entry.durationminutes) + " M: "+ str(entry.durationseconds) +" S"
         total_sec += ((entry.durationminutes*60)+entry.durationseconds)
         dict_list.append(my_dict)
-    secs = total_sec % 60
-    mins = int((total_sec - secs)/60)
-    hours = int((mins - (mins%60))/60)
+    hours, mins, secs = convert(total_sec)
     try:
         total_duration = (taskobj.durationhours*60*60)+(taskobj.durationminutes*60)
         progress = (total_sec/total_duration)*100
