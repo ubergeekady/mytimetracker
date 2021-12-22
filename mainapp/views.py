@@ -70,7 +70,7 @@ def dashboardview(request):
     for entry in time_entry_list:
         total_secs_today += ((entry.durationminutes*60)+entry.durationseconds)
     today_time = convert(total_secs_today)
-    today_productivity = (total_secs_today/(16*60*60))*100
+    today_productivity = (total_secs_today/(24*60*60))*100
 
     yesterday = date.today() - timedelta(days=1)
     time_entry_list = models.TimeEntry.objects.filter(owner=request.user, start_time__date = yesterday)
@@ -78,7 +78,7 @@ def dashboardview(request):
     for entry in time_entry_list:
         total_secs_yesterday += ((entry.durationminutes*60)+entry.durationseconds)
     yesterday_time = convert(total_secs_yesterday)
-    yesterday_productivity = (total_secs_yesterday/(16*60*60))*100
+    yesterday_productivity = (total_secs_yesterday/(24*60*60))*100
     return render(request, 'dashboard.html', {
         'today_time':today_time,
         'today_productivity':'{:.2f}%'.format(today_productivity),
@@ -331,7 +331,7 @@ def report(request):
         secs = total_sec % 60
         mins = int((total_sec - secs)/60)
         hours = int((mins - (mins%60))/60)
-        productivity = (total_sec/(16*60*60))*100
+        productivity = (total_sec/(24*60*60))*100
         table_header =  t.substitute(client='Client', project="Project", task="Task", 
                                 starttime="Start Time", endtime="End Time",
                             minutes="Minutes", seconds="Seconds", duration="duration_string")
