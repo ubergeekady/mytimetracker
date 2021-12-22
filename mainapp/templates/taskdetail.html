@@ -1,6 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+{% load static %}
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -23,7 +24,7 @@
               <div class="card-header">
                 <h3 class="card-title">Task Detail : {{taskobj.name}}</h3>
                 <div class="card-tools">
-                <a class="btn btn-info btn-sm" href="{% url 'timerentry' task_id=task_id %}">
+                <a class="btn btn-info btn-sm" href="{% url 'timeentry' task_id=task_id %}">
                     <i class="fas fa-pencil-alt">
                     </i>
                     Timer Entry
@@ -32,7 +33,8 @@
                 </div>
               </div>
               <div class="card-body p-0">
-
+{% if al %}
+{% endif %}
                 Estimated Time :
                 Tracked Time : 
 
@@ -63,9 +65,9 @@
                     <tr>
                       <td>{{item.start_time}}</td>
                       <td>{{item.end_time}}</td>
-                      <td>{{item.duration}}</td>
+                      <td>{{item.durationminutes}} Minutes : {{item.durationseconds}} Seconds</td>
                       <td class="project-actions text-right">
-                        <a class="btn btn-danger btn-sm" href="#">
+                        <a class="btn btn-danger btn-sm" href="{% url 'timeentrydelete' item.id %}">
                             <i class="fas fa-trash">
                             </i>
                             Delete

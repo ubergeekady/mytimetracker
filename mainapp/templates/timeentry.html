@@ -1,0 +1,127 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+{% load static %}
+
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container">
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+
+
+    <audio id = "aud" src="{% static 'dist/alarm.mp3' %}"></audio>
+    
+
+
+
+
+
+
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container">
+        <div class="row">
+
+
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">New Timer Entry</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <span id="myForm">
+                    <form>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="duration">Minutes:</label>
+                                <input type="text" class="form-control" name="minutes" id="minutes" ">
+                            </div>
+                            <div class="form-group">
+                                <label for="duration">Seconds:</label>
+                                <input type="text" class="form-control" name="seconds" id="seconds" ">
+                            </div>
+                        </div>  
+                        <div class="card-footer">
+                            <button type="submit" id="submitbut" class="btn btn-primary">Start Timer</button>
+                        </div>
+                    </form>    
+                    </span>
+
+                    <h1><span id="countDownDiv">
+
+                    </span></h1>
+                  </div>
+                </div>
+              </div>
+
+
+<script>
+    document.getElementById("submitbut").addEventListener("click", function(event){
+        event.preventDefault();
+        minutes = document.getElementById("minutes").value;
+        seconds = document.getElementById("seconds").value;
+        msUntilMidnight = new Date().setHours(24,0,0,0) - Date.now()
+        if(isNaN(minutes)==true || isNaN(seconds)==true){
+            alert("Please enter a valid number")
+        } else {
+            if(minutes*60*1000 < msUntilMidnight){
+                document.getElementById("myForm").innerHTML="";
+                duration = ((minutes*60)+seconds)*1000
+                starttime = (new Date()).toLocaleString()
+                handle = setInterval(function() {
+                    duration = duration-100
+                    if(duration < 0){
+                        clearInterval(handle)
+                        endtime = (new Date()).toLocaleString()
+                        const params = new URLSearchParams({
+                            taskId: {{task_id}},
+                            startTime: starttime,
+                            endTime: endtime,
+                        });
+                        url = "{% url 'newtimeentry' %}?"+params.toString();
+                        document.getElementById("aud").play();
+                        sleep(2000).then(() => {
+                          window.location.replace(url);
+                        });
+                    } else {
+                        document.getElementById("countDownDiv").innerText = duration;
+                    }
+                }, 100)
+            } else {
+                alert("Please enter a shorter period")
+            }
+        }
+    });
+
+function sleep(time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+</script>
+
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+
+  {% endblock %}

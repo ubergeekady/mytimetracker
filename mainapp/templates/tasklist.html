@@ -36,6 +36,7 @@
                   <thead>
                     <tr>
                       <th>Task</th>
+                      <th>Estimated Time</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -43,6 +44,7 @@
                     {% for item in task_list %}
                     <tr>
                       <td><a href="{% url 'taskdetail' item.id %}">{{item.name}}</a></td>
+                      <td>{{item.durationhours}} Hours : {{item.durationminutes}} Minutes</td>
                       <td class="project-actions text-right">
                         <a class="btn btn-info btn-sm" href="{% url 'taskedit' item.id %}">
                             <i class="fas fa-pencil-alt">

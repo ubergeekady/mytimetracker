@@ -79,14 +79,26 @@
     </div>
 
     <div class="form-group">
-        {% if form.estimated_time.errors %}
-          {% for err in form.estimated_time.errors %}
-            <label class="col-form-label" for="id_estimated_time"><i class="far fa-times-circle"></i>{{form.estimated_time.label_tag}} {{ err }}</label>
+        {% if form.durationhours.errors %}
+          {% for err in form.durationhours.errors %}
+            <label class="col-form-label" for="durationhours"><i class="far fa-times-circle"></i>{{form.durationhours.label_tag}} {{ err }}</label>
           {% endfor %}
-          <input type="text" class="form-control is-invalid" name="estimated_time" maxlength="40" id="id_estimated_time" {% if form.estimated_time.value != None %}value="{{ form.estimated_time.value|stringformat:'s' }}"{% endif %}> 
+          <input type="text" class="form-control is-invalid" name="durationhours" maxlength="40" id="id_durationhours" {% if form.durationhours.value != None %}value="{{ form.durationhours.value|stringformat:'s' }}"{% endif %}> 
         {% else %}
-          {{form.estimated_time.label_tag}}
-          <input type="text" class="form-control" name="estimated_time" maxlength="40" id="id_estimated_time" {% if form.estimated_time.value != None %}value="{{ form.estimated_time.value|stringformat:'s' }}"{% endif %}">
+          {{form.durationhours.label_tag}}
+          <input type="text" class="form-control" name="durationhours" maxlength="40" id="id_durationhours" {% if form.durationhours.value != None %}value="{{ form.durationhours.value|stringformat:'s' }}"{% endif %}">
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        {% if form.durationminutes.errors %}
+          {% for err in form.durationminutes.errors %}
+            <label class="col-form-label" for="durationminutes"><i class="far fa-times-circle"></i>{{form.durationminutes.label_tag}} {{ err }}</label>
+          {% endfor %}
+          <input type="text" class="form-control is-invalid" name="durationminutes" maxlength="40" id="id_durationminutes" {% if form.durationminutes.value != None %}value="{{ form.durationminutes.value|stringformat:'s' }}"{% endif %}> 
+        {% else %}
+          {{form.durationminutes.label_tag}}
+          <input type="text" class="form-control" name="durationminutes" maxlength="40" id="id_durationminutes" {% if form.durationminutes.value != None %}value="{{ form.durationminutes.value|stringformat:'s' }}"{% endif %}">
         {% endif %}
       </div>
   

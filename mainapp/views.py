@@ -10,6 +10,7 @@ from django.http import HttpResponseForbidden
 from django.conf import settings
 from . import forms
 from . import models
+from datetime import datetime
 import os
 import google_auth_oauthlib.flow
 
@@ -208,19 +209,54 @@ def taskdelete(request, task_id):
 
 @login_required
 def taskdetail(request, task_id):
+    al = request.GET.get('al', None)
+    if al is None:
+        al=False
+    else:
+        al=True
     taskobj = get_object_or_404(models.Task, pk=task_id)
     if taskobj.owner != request.user:
         return HttpResponseForbidden()
     time_entry_list = models.TimeEntry.objects.filter(owner=request.user, task=taskobj)
-    return render(request, 'taskdetail.html', {'task_id':task_id, 'taskobj':taskobj, 'time_entry_list':time_entry_list})
+    return render(request, 'taskdetail.html', {'al':al, 'task_id':task_id, 'taskobj':taskobj, 'time_entry_list':time_entry_list})
 
 @login_required
-def timerentry(request, task_id):
+def timeentry(request, task_id):
     taskobj = get_object_or_404(models.Task, pk=task_id)
     if taskobj.owner != request.user:
         return HttpResponseForbidden()
-    return render(request, 'timerentry.html', {'task_id':task_id, 'taskobj':taskobj})
+    return render(request, 'timeentry.html', {'task_id':task_id, 'taskobj':taskobj})
 
+@login_required
+def newtimeentry(request):
+    taskId = request.GET.get('taskId', None)
+    startTime = request.GET.get('startTime', None)
+    endTime = request.GET.get('endTime', None)
+    startTime= datetime.strptime(startTime, '%d/%m/%Y, %H:%M:%S')
+    endTime= datetime.strptime(endTime, '%d/%m/%Y, %H:%M:%S')
+    difference = endTime-startTime
+    seconds = difference.seconds
+    min, sec = divmod(seconds, 60)
+    hour, min = divmod(min, 60)
+    print(taskId)
+    print(startTime)
+    print(endTime)
+    print(min,sec)
+    taskobj = get_object_or_404(models.Task, pk=taskId)
+    mod = models.TimeEntry.objects.create(start_time=startTime, end_time=endTime, 
+                                durationminutes=min, durationseconds=sec,
+                                task=taskobj, owner=request.user)
+    mod.save()
+    return redirect("%s?al=1" % reverse('taskdetail', kwargs={'task_id':taskId}))
+
+@login_required
+def timeentrydelete(request, timeentry_id):
+    timeentryobj = get_object_or_404(models.TimeEntry, pk=timeentry_id)
+    taskid = timeentryobj.taskobj.id
+    if timeentryobj.owner != request.user:
+        return HttpResponseForbidden()
+    timeentryobj.delete()
+    return redirect(reverse('taskdetail', kwargs={'task_id':taskid}))
 
 
 def get_authorization_url():

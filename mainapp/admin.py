@@ -3,17 +3,17 @@ from django.db import models
 from . import models
 
 @admin.register(models.Client)
-class ClientsAdmin(admin.ModelAdmin):
+class ClientAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
 
 @admin.register(models.Project)
-class ClientsAdmin(admin.ModelAdmin):
+class ProjectAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
 
 @admin.register(models.Task)
-class ClientsAdmin(admin.ModelAdmin):
+class TaskAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
 
 @admin.register(models.TimeEntry)
-class ClientsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'start_time', 'end_time', 'duration')
+class TimeEntryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'start_time', 'end_time', 'durationminutes','durationseconds')

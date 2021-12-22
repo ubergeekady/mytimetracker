@@ -14,4 +14,4 @@ class ProjectForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = models.Task
-        fields = ['name', 'estimated_time']
+        fields = ['name', 'durationhours','durationminutes']
