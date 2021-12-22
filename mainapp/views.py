@@ -252,7 +252,7 @@ def taskdetail(request, task_id):
         my_dict['duration_string'] = str(entry.durationminutes) + " M: "+ str(entry.durationseconds) +" S"
         total_sec += ((entry.durationminutes*60)+entry.durationseconds)
         dict_list.append(my_dict)
-    hours, mins, secs = convert(total_sec)
+    (hours, mins, secs) = converttotuple(total_sec)
     try:
         total_duration = (taskobj.durationhours*60*60)+(taskobj.durationminutes*60)
         progress = (total_sec/total_duration)*100
@@ -394,3 +394,11 @@ def convert(seconds):
     minutes = seconds // 60
     seconds %= 60
     return "%d:%02d:%02d" % (hour, minutes, seconds)
+
+def converttotuple(seconds):
+    seconds = seconds % (24 * 3600)
+    hour = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+    return hour, minutes, seconds
