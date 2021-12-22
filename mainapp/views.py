@@ -64,7 +64,27 @@ def logoutview(request):
 
 @login_required
 def dashboardview(request):
-    return render(request, 'dashboard.html')
+    today = date.today()
+    time_entry_list = models.TimeEntry.objects.filter(owner=request.user, start_time__date = today)
+    total_secs_today = 0 
+    for entry in time_entry_list:
+        total_secs_today += ((entry.durationminutes*60)+entry.durationseconds)
+    today_time = convert(total_secs_today)
+    today_productivity = (total_secs_today/(16*60*60))*100
+
+    yesterday = date.today() - timedelta(days=1)
+    time_entry_list = models.TimeEntry.objects.filter(owner=request.user, start_time__date = yesterday)
+    total_secs_yesterday = 0 
+    for entry in time_entry_list:
+        total_secs_yesterday += ((entry.durationminutes*60)+entry.durationseconds)
+    yesterday_time = convert(total_secs_yesterday)
+    yesterday_productivity = (total_secs_yesterday/(16*60*60))*100
+    return render(request, 'dashboard.html', {
+        'today_time':today_time,
+        'today_productivity':'{:.2f}%'.format(today_productivity),
+        'yesterday_time':yesterday_time,
+        'yesterday_productivity':'{:.2f}%'.format(yesterday_productivity)
+    })
 
 @login_required
 def clientlist(request):
@@ -212,16 +232,35 @@ def taskdelete(request, task_id):
 
 @login_required
 def taskdetail(request, task_id):
-    al = request.GET.get('al', None)
-    if al is None:
-        al=False
-    else:
-        al=True
     taskobj = get_object_or_404(models.Task, pk=task_id)
     if taskobj.owner != request.user:
         return HttpResponseForbidden()
     time_entry_list = models.TimeEntry.objects.filter(owner=request.user, task=taskobj)
-    return render(request, 'taskdetail.html', {'al':al, 'task_id':task_id, 'taskobj':taskobj, 'time_entry_list':time_entry_list})
+    total_sec = 0 
+    dict_list = []    
+    for entry in time_entry_list:
+        my_dict = {}
+        my_dict['client'] = entry.taskobj.projectobj.clientobj.name
+        my_dict['project'] = entry.taskobj.projectobj.name           
+        my_dict['task'] = entry.taskobj.name
+        my_dict['startTime'] = entry.start_time
+        my_dict['endTime'] = entry.end_time
+        my_dict['minutes'] = entry.durationminutes
+        my_dict['seconds'] = entry.durationseconds
+        my_dict['duration_string'] = str(entry.durationminutes) + " M: "+ str(entry.durationseconds) +" S"
+        total_sec += ((entry.durationminutes*60)+entry.durationseconds)
+        dict_list.append(my_dict)
+    secs = total_sec % 60
+    mins = int((total_sec - secs)/60)
+    hours = int((mins - (mins%60))/60)
+    try:
+        total_duration = (taskobj.durationhours*60*60)+(taskobj.durationminutes*60)
+        progress = (total_sec/total_duration)*100
+    except:
+        progress=0
+    done = "{} Hours : {} Minutes : {} Seconds".format(hours, mins, secs)
+    progress_percentage="{:.2f}".format(progress)
+    return render(request, 'taskdetail.html', {'task_id':task_id, 'taskobj':taskobj, 'done':done, 'progress':progress_percentage, 'time_entry_list':time_entry_list})
 
 @login_required
 def timeentry(request, task_id):
@@ -337,3 +376,11 @@ def credentials_to_dict(credentials):
           'client_id': credentials.client_id,
           'client_secret': credentials.client_secret,
           'scopes': credentials.scopes}
+
+def convert(seconds):
+    seconds = seconds % (24 * 3600)
+    hour = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+    return "%d:%02d:%02d" % (hour, minutes, seconds)
