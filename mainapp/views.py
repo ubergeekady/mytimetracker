@@ -15,6 +15,7 @@ from . import forms
 from . import models
 from datetime import datetime,date, timedelta
 import os
+import pytz
 import google_auth_oauthlib.flow
 
 CLIENT_CONFIG = {'web': {
@@ -64,7 +65,8 @@ def logoutview(request):
 
 @login_required
 def dashboardview(request):
-    today = date.today()
+    IST = pytz.timezone('Asia/Kolkata')
+    today = datetime.now(IST).date()
     time_entry_list = models.TimeEntry.objects.filter(owner=request.user, start_time__date = today)
     total_secs_today = 0 
     for entry in time_entry_list:
@@ -72,7 +74,7 @@ def dashboardview(request):
     today_time = convert(total_secs_today)
     today_productivity = (total_secs_today/(24*60*60))*100
 
-    yesterday = date.today() - timedelta(days=1)
+    yesterday = today - timedelta(days=1)
     time_entry_list = models.TimeEntry.objects.filter(owner=request.user, start_time__date = yesterday)
     total_secs_yesterday = 0 
     for entry in time_entry_list:
@@ -310,7 +312,9 @@ def report(request):
             </tr>
         """
     t = Template(row_template)
-    yesterday = date.today() - timedelta(days=1)
+    IST = pytz.timezone('Asia/Kolkata')
+    today = datetime.now(IST).date()
+    yesterday = today - timedelta(days=1)
     user_list = models.User.objects.filter(is_staff=False)
     total_sec = 0 
     dict_list = []
