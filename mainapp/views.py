@@ -346,7 +346,15 @@ def report(request):
                             minutes=item['minutes'], seconds=item['seconds'], duration=item['duration_string'])
             table_str += row_str
         table_str += "</table>"
-        subject = "You worked {}H, {}M, {}S yesterday. Your productivity was {:.2f}%".format(hours, mins, secs, productivity)
+        if productivity <20:
+            performance="Miserable"
+        if productivity <40 and productivity>20:
+            performance="PassMarks"
+        if productivity <60 and productivity>40:
+            performance="Good"
+        if productivity>40:
+            performance="Excellent"
+        subject = "You worked {}H, {}M, {}S yesterday. Your productivity was {:.2f}%. {}".format(hours, mins, secs, productivity, performance)
         msgtxt = Mail(
             from_email='adysingh1989coursera@gmail.com',
             to_emails=user.email,
