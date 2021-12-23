@@ -330,9 +330,7 @@ def report(request):
             my_dict['duration_string'] = str(entry.durationminutes) + " M: "+ str(entry.durationseconds) +" S"
             total_sec += ((entry.durationminutes*60)+entry.durationseconds)
             dict_list.append(my_dict)
-        secs = total_sec % 60
-        mins = int((total_sec - secs)/60)
-        hours = int((mins - (mins%60))/60)
+        (hours, mins, secs) = converttotuple(total_sec)
         productivity = (total_sec/(24*60*60))*100
         table_header =  t.substitute(client='Client', project="Project", task="Task", 
                                 starttime="Start Time", endtime="End Time",
